@@ -1,0 +1,25 @@
+# Build outputs
+build/
+out/
+cmake-build-*/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+
+# Token database (generated)
+*.token_db.json
