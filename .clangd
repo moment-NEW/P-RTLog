@@ -1,0 +1,57 @@
+# .clangd - clangd configuration for P-RTLog
+# Docs: https://clangd.llvm.org/config
+
+CompileFlags:
+  # Treat all .c/.h files as C11, .cc/.cpp as C++17
+  Add:
+    # ---- Include paths ----
+    # Project source root (for "p-macro.h", "tokenizer/...", "log_tokenized/...")
+    - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/src"
+    # Pigweed modules - public headers
+    - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/third_party/pigweed/pw_tokenizer/pw_tokenizer/public"
+    - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/third_party/pigweed/pw_log_tokenized/public"
+    # Pigweed modules - override headers (pw_log_backend/...)
+    - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/third_party/pigweed/pw_log_tokenized/public_overrides"
+    - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/third_party/pigweed/pw_log_tokenized/light_public_overrides"
+    - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/third_party/pigweed/pw_log_tokenized/gcc_partially_tokenized_public_overrides"
+    - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/third_party/pigweed/pw_log_tokenized/metadata_public_overrides"
+    # Segger RTT
+    - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/third_party/segger_rtt/RTT"
+    - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/third_party/segger_rtt/Config"
+
+    # ---- Macro definitions ----
+    - "-DP_TOKENIZER_CFG_ARG_TYPES_SIZE_BYTES=4"
+    - "-DP_TOKENIZER_CFG_C_HASH_LENGTH=128"
+
+    # ---- Language standards ----
+    - "-std=c++17"
+    # Use GNU extensions (for __attribute__ etc.)
+    - "-fno-exceptions"
+    - "-fno-rtti"
+
+    # ---- Suppress noisy warnings from pigweed internals ----
+    - "-Wno-unknown-pragmas"
+    - "-Wno-unused-function"
+    - "-Wno-unused-variable"
+
+  # Remove flags that clangd doesn't understand (GCC-specific)
+  Remove:
+    - "-mcpu=*"
+    - "-mthumb"
+    - "-mfloat-abi=*"
+    - "-mfpu=*"
+    - "-fno-common"
+    - "-fdata-sections"
+    - "-ffunction-sections"
+
+  # Compiler to emulate (clangd uses this for built-in headers like stdint.h)
+  Compiler: clang++
+
+Diagnostics:
+  # Suppress diagnostics for files outside the project
+  Suppress:
+    - "pp_file_not_found"   # Missing pigweed modules (pw_log, pw_polyfill, etc.)
+  UnusedIncludes: None
+
+Index:
+  Background: Build
