@@ -3,7 +3,9 @@
 P-RTLog 是 P-Momentum 工具集中的日志模块。它集成并裁剪了 Pigweed 的哈希化日志（tokenized log）与 SEGGER RTT 的实时传输能力，提供最大可配置性与开箱即用性。
 
 由于 RTT Viewer 原生不支持 tokenized log，建议配合工具集中的 **RTT-View Ciallo** 使用（它还支持 DAPLink 哦）。
-
+# 前言
+项目的初衷是实现轻量化的tokenized库，没想到谷歌的pigweed依赖十分的繁杂，一个函数可以套五六层，然后用inline展开这种惊为天人的操作。本库因为是移植的pw_tokenized_log，多少依然有类似的依赖情况，只是删除和改写了部分文件，没有全部封装到一起。后续会按照P-Momentum的思想逐步改进为更轻量化，方便配置的形式。
+此外，目前还没实现MVP，但是可以作为参考。后续完成了再更新
 ## 工作原理
 
 ```

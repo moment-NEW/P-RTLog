@@ -20,7 +20,7 @@
 #include "pw_polyfill/standard.h"
 #include "p-macro.h"
 #include "tokenizer/internal/argument_types.h"
-#include "pw_varint/varint.h"
+#include "p_varint.h"
 
 #ifdef __cplusplus
 

@@ -18,7 +18,7 @@
 #include <cstring>
 
 #include "p-macro.h"
-#include "pw_varint/varint.h"
+#include "p_varint.h"
 
 static_assert((P_TOKENIZER_CFG_ARG_TYPES_SIZE_BYTES == 4) ||
                   (P_TOKENIZER_CFG_ARG_TYPES_SIZE_BYTES == 8),
