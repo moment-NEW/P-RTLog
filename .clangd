@@ -1,12 +1,16 @@
 # .clangd - clangd configuration for P-RTLog
 # Docs: https://clangd.llvm.org/config
 
+# ============================================================
+# Common flags shared by all files (C and C++)
+# ============================================================
 CompileFlags:
-  # Treat all .c/.h files as C11, .cc/.cpp as C++17
   Add:
     # ---- Include paths ----
     # Project source root (for "p-macro.h", "tokenizer/...", "log_tokenized/...")
     - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/src"
+    # Project source root (for "P-span.h")
+    - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/src/p-span"
     # Pigweed modules - public headers
     - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/third_party/pigweed/pw_tokenizer/pw_tokenizer/public"
     - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/third_party/pigweed/pw_log_tokenized/public"
@@ -18,16 +22,12 @@ CompileFlags:
     # Segger RTT
     - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/third_party/segger_rtt/RTT"
     - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/third_party/segger_rtt/Config"
+    # Stubs for missing pigweed modules (pw_log, pw_polyfill)
+    - "-Id:/CODES/Robomaster/Codes_Update/P-RTLog/stubs"
 
     # ---- Macro definitions ----
     - "-DP_TOKENIZER_CFG_ARG_TYPES_SIZE_BYTES=4"
     - "-DP_TOKENIZER_CFG_C_HASH_LENGTH=128"
-
-    # ---- Language standards ----
-    - "-std=c++17"
-    # Use GNU extensions (for __attribute__ etc.)
-    - "-fno-exceptions"
-    - "-fno-rtti"
 
     # ---- Suppress noisy warnings from pigweed internals ----
     - "-Wno-unknown-pragmas"
@@ -44,14 +44,46 @@ CompileFlags:
     - "-fdata-sections"
     - "-ffunction-sections"
 
-  # Compiler to emulate (clangd uses this for built-in headers like stdint.h)
-  Compiler: clang++
-
 Diagnostics:
-  # Suppress diagnostics for files outside the project
   Suppress:
     - "pp_file_not_found"   # Missing pigweed modules (pw_log, pw_polyfill, etc.)
   UnusedIncludes: None
 
 Index:
   Background: Build
+
+# ============================================================
+# C++ files (.cc, .cpp, .hpp) → C++17
+# ============================================================
+---
+If:
+  PathMatch: .*\.(cc|cpp|hpp)$
+CompileFlags:
+  Add:
+    - "-std=c++17"
+    - "-fno-exceptions"
+    - "-fno-rtti"
+  Compiler: clang++
+
+# ============================================================
+# C files (.c) → C11 (GNU extensions for __attribute__ etc.)
+# ============================================================
+---
+If:
+  PathMatch: .*\.c$
+CompileFlags:
+  Add:
+    - "-std=gnu11"
+  Compiler: clang
+
+# ============================================================
+# C headers (.h) → force C language to avoid ObjC++ ambiguity
+# ============================================================
+---
+If:
+  PathMatch: .*\.h$
+CompileFlags:
+  Add:
+    - "-xc"
+    - "-std=gnu11"
+  Compiler: clang

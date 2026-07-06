@@ -18,6 +18,12 @@
 #include "pw_polyfill/static_assert.h"
 #include "tokenizer/config.h"
 
+
+//PLS refer to line 170 to select your backend,or using your define.
+
+
+
+
 /// @module{pw_log_tokenized}
 
 // The size of the stack-allocated argument encoding buffer to use by default.
@@ -139,6 +145,45 @@ static_assert((P_LOG_TOKENIZED_LEVEL_BITS + P_LOG_TOKENIZED_LINE_BITS +
                            P_LOG_TOKENIZED_LINE_BITS +  \
                            P_LOG_TOKENIZED_FLAG_BITS)))
 #endif  // P_LOG_TOKENIZED_MODULE_BITS
+
+
+
+
+
+
+
+
+// =============================================================================
+// Backend selection (mutually exclusive — define exactly ONE)
+// =============================================================================
+//
+// Usage:
+//   In your project settings or compiler flags, define one of:
+//     -DUSING_RTT_BACKEND     → SEGGER RTT (J-Link)
+//     -DUSING_UART_BACKEND    → UART (future)
+//     -DUSING_SWO_BACKEND     → SWO/ITM   (future)
+//
+// If none is defined, a compile-time error is raised.
+// If more than one is defined, a compile-time error is raised.
+// =============================================================================
+// Here to Select your backend
+#define USING_RTT_BACKEND//for example
+
+#if defined(USING_RTT_BACKEND) + defined(USING_UART_BACKEND) + defined(USING_SWO_BACKEND) > 1
+  #error "Only one log backend can be enabled at a time (USING_RTT_BACKEND / USING_UART_BACKEND / USING_SWO_BACKEND)"
+#endif
+
+#if !defined(USING_RTT_BACKEND) && !defined(USING_UART_BACKEND) && !defined(USING_SWO_BACKEND)
+  #error "No log backend selected. Define one of: USING_RTT_BACKEND, USING_UART_BACKEND, USING_SWO_BACKEND"
+#endif
+
+
+#ifdef USING_RTT_BACKEND
+  
+// default options for RTT backend
+#define P_RTT_LOG_CHANNEL 0
+
+#endif  // USING_RTT_BACKEND
 
 #ifdef __cplusplus
 

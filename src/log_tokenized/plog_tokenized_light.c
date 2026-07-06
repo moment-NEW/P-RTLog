@@ -9,11 +9,11 @@
 #include <string.h>
 #include <stdarg.h>
 #include "log_tokenized/log_tokenized_light.h"
-#include "p_tokenizer.h"
-#include "p_span.h"
+#include "tokenizer/internal/argument_types.h"
+#include "P-span.h"
 #include "p_varint.h"
 #include "config.h"
-#include "p_log_tokenized/handler.h"
+#include "pw_log_tokenized/handler.h"
 
 /* C 语言没有 std::min，手写一个 */
 #define P_MIN(a, b) (((a) < (b)) ? (a) : (b))
@@ -114,6 +114,9 @@ size_t p_encode_args(uint32_t types,
   
     
   size_t arg_count = types & P_TOKENIZER_TYPE_COUNT_MASK;
+  //这一步的目的是
+  //type通过2位来表示参数类型，然后因为是uint32_t,可以储存14个参数类型，以及最末尾的4位表示参数数量，所以右移14个2bit后，剩下的就是参数数量了
+  //所以文件末尾你可以看到右移2位，继续取后两位来判断下一个参数类型
   types >>= P_TOKENIZER_TYPE_COUNT_SIZE_BITS;
 
   size_t encoded_bytes = 0;
@@ -147,7 +150,7 @@ size_t p_encode_args(uint32_t types,
     if (argument_bytes == 0u) {
       break;
     }
-
+    //开个子视图，
     output = p_span_subspan(&output, argument_bytes,
                             p_span_size(&output) - argument_bytes);
     encoded_bytes += argument_bytes;
@@ -187,13 +190,16 @@ static void p_encoded_message(
         msg->size = sizeof(token) + p_encode_args(types, args, args_span);
 }
 //施工中，先实现依赖的各种函数
+//可变参数函数，...后面可以填若干参数
 void p_log_tokenized_encode_without_metadata(uint32_t token, uint32_t types, ...) {
   va_list args;//va_list 是一个用于访问可变参数的类型，通常用于实现类似 printf 的函数。
+  //这里开始初始化arg,
   va_start(args, types);
-  
+  //没有cpp隐式初始化的data和size，所以手动实现一个，反正打完log就放弃了
   p_encoded_message_t encoded_message;
   p_encoded_message(&encoded_message, token, types, args);
-  
+  //此时size和data都缓存到encoded_message里了
+
   va_end(args);
 
   // TODO: 调用 handler 处理编码后的消息
