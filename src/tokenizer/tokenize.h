@@ -451,6 +451,8 @@ constexpr bool Contains(const char* haystack, const char* needle) {
 // by the pw_tokenizer tooling, so tokens are not stored when building a Mach-O.
 #ifdef __APPLE__
 #define _P_TOKENIZER_SECTION P_USED
+#elif defined(P_RTLOG_AC6_FIXED_TOKEN_SECTION)
+#define _P_TOKENIZER_SECTION P_KEEP_IN_SECTION(".pw_tokenizer.entries")
 #else
 #define _P_TOKENIZER_SECTION \
   P_KEEP_IN_SECTION(P_STRINGIFY(_P_TOKENIZER_UNIQUE(.pw_tokenizer.entries.)))

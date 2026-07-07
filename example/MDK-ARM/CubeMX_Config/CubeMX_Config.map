@@ -2199,7 +2199,9 @@ Image Symbol Table
     ../clib/string.c                         0x00000000   Number         0  strlen.o ABSOLUTE
     ../fplib/fpinit.s                        0x00000000   Number         0  fpinit.o ABSOLUTE
     SEGGER_RTT.c                             0x00000000   Number         0  segger_rtt.o ABSOLUTE
+    __tagsym$$used.0                         0x00000000   Number         0  main.o(.pw_tokenizer.entries)
     dc.s                                     0x00000000   Number         0  dc.o ABSOLUTE
+    main._pw_tokenizer_string_entry_107_0    0x00000000   Data         106  main.o(.pw_tokenizer.entries)
     main.c                                   0x00000000   Number         0  main.o ABSOLUTE
     plog_tokenized_light.c                   0x00000000   Number         0  plog_tokenized_light.o ABSOLUTE
     rtt_backend.c                            0x00000000   Number         0  rtt_backend.o ABSOLUTE
@@ -2225,6 +2227,7 @@ Image Symbol Table
     stm32h7xx_hal_uart_ex.c                  0x00000000   Number         0  stm32h7xx_hal_uart_ex.o ABSOLUTE
     stm32h7xx_it.c                           0x00000000   Number         0  stm32h7xx_it.o ABSOLUTE
     system_stm32h7xx.c                       0x00000000   Number         0  system_stm32h7xx.o ABSOLUTE
+    [Anonymous Symbol]                       0x00000000   Section        0  main.o(.pw_tokenizer.entries)
     RESET                                    0x08000000   Section      716  startup_stm32h723xx.o(RESET)
     !!!main                                  0x080002cc   Section        8  __main.o(!!!main)
     !!!scatter                               0x080002d4   Section       92  __scatter.o(!!!scatter)
@@ -2347,16 +2350,13 @@ Image Symbol Table
     [Anonymous Symbol]                       0x08003ad0   Section        0  rtt_backend.o(.text.rtt_backend_init)
     $v0                                      0x08003ad4   Number         0  fpinit.o(x$fpl$fpinit)
     x$fpl$fpinit                             0x08003ad4   Section       26  fpinit.o(x$fpl$fpinit)
-    __tagsym$$used.0                         0x08003aee   Number         0  main.o(.pw_tokenizer.entries.107_1)
-    main._pw_tokenizer_string_entry_107_0    0x08003aee   Data         106  main.o(.pw_tokenizer.entries.107_1)
-    [Anonymous Symbol]                       0x08003aee   Section        0  main.o(.pw_tokenizer.entries.107_1)
-    .Lswitch.table.UART_SetConfig.7          0x08003b58   Data           6  stm32h7xx_hal_uart.o(.rodata..Lswitch.table.UART_SetConfig.7)
-    .Lswitch.table.UART_SetConfig.9          0x08003b5e   Data           6  stm32h7xx_hal_uart.o(.rodata..Lswitch.table.UART_SetConfig.9)
-    UARTEx_SetNbDataToProcess.numerator      0x08003b8c   Data           8  stm32h7xx_hal_uart_ex.o(.rodata.cst8)
-    [Anonymous Symbol]                       0x08003b8c   Section        0  stm32h7xx_hal_uart_ex.o(.rodata.cst8)
-    UARTEx_SetNbDataToProcess.denominator    0x08003b94   Data           8  stm32h7xx_hal_uart_ex.o(.rodata.cst8)
-    .L.str                                   0x08003b9c   Data           9  segger_rtt.o(.rodata.str1.1)
-    [Anonymous Symbol]                       0x08003b9c   Section        0  segger_rtt.o(.rodata.str1.1)
+    .Lswitch.table.UART_SetConfig.7          0x08003aee   Data           6  stm32h7xx_hal_uart.o(.rodata..Lswitch.table.UART_SetConfig.7)
+    .Lswitch.table.UART_SetConfig.9          0x08003af4   Data           6  stm32h7xx_hal_uart.o(.rodata..Lswitch.table.UART_SetConfig.9)
+    UARTEx_SetNbDataToProcess.numerator      0x08003b22   Data           8  stm32h7xx_hal_uart_ex.o(.rodata.cst8)
+    [Anonymous Symbol]                       0x08003b22   Section        0  stm32h7xx_hal_uart_ex.o(.rodata.cst8)
+    UARTEx_SetNbDataToProcess.denominator    0x08003b2a   Data           8  stm32h7xx_hal_uart_ex.o(.rodata.cst8)
+    .L.str                                   0x08003b32   Data           9  segger_rtt.o(.rodata.str1.1)
+    [Anonymous Symbol]                       0x08003b32   Section        0  segger_rtt.o(.rodata.str1.1)
     .L_MergedGlobals                         0x24000000   Data           8  stm32h7xx_hal.o(.data..L_MergedGlobals)
     [Anonymous Symbol]                       0x24000000   Section        0  stm32h7xx_hal.o(.data..L_MergedGlobals)
     .L_MergedGlobals                         0x24000008   Data           8  system_stm32h7xx.o(.data..L_MergedGlobals)
@@ -2683,10 +2683,10 @@ Image Symbol Table
     _fp_init                                 0x08003ad5   Thumb Code    26  fpinit.o(x$fpl$fpinit)
     __fplib_config_fpu_vfp                   0x08003aed   Thumb Code     0  fpinit.o(x$fpl$fpinit)
     __fplib_config_pureend_doubles           0x08003aed   Thumb Code     0  fpinit.o(x$fpl$fpinit)
-    D1CorePrescTable                         0x08003b64   Data          16  system_stm32h7xx.o(.rodata.D1CorePrescTable)
-    UARTPrescTable                           0x08003b74   Data          24  stm32h7xx_hal_uart.o(.rodata.UARTPrescTable)
-    Region$$Table$$Base                      0x08003ba8   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x08003bc8   Number         0  anon$$obj.o(Region$$Table)
+    D1CorePrescTable                         0x08003afa   Data          16  system_stm32h7xx.o(.rodata.D1CorePrescTable)
+    UARTPrescTable                           0x08003b0a   Data          24  stm32h7xx_hal_uart.o(.rodata.UARTPrescTable)
+    Region$$Table$$Base                      0x08003b3c   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x08003b5c   Number         0  anon$$obj.o(Region$$Table)
     uwTickFreq                               0x24000000   Data           1  stm32h7xx_hal.o(.data..L_MergedGlobals)
     uwTickPrio                               0x24000004   Data           4  stm32h7xx_hal.o(.data..L_MergedGlobals)
     SystemCoreClock                          0x24000008   Data           4  system_stm32h7xx.o(.data..L_MergedGlobals)
@@ -2705,9 +2705,19 @@ Memory Map of the image
 
   Image Entry point : 0x080002cd
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00003bd8, Max: 0x00100000, ABSOLUTE)
+  Load Region LR_PW_TOKENIZER (Base: 0x00000000, Size: 0x0000006c, Max: 0xffffffff, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00003bc8, Max: 0x00100000, ABSOLUTE)
+    Execution Region ER_PW_TOKENIZER (Exec base: 0x00000000, Load base: 0x00000000, Size: 0x0000006c, Max: 0xffffffff, ABSOLUTE)
+
+    Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
+
+    0x00000000   0x00000000   0x0000006a   Data   RO           17    .pw_tokenizer.entries  main.o
+
+
+
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00003b70, Max: 0x00100000, ABSOLUTE)
+
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00003b5c, Max: 0x00100000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -2875,36 +2885,35 @@ Memory Map of the image
     0x08003a90   0x08003a90   0x00000040   Code   RO         1165    .text.pw_log_tokenized_HandleLogWithoutMetadata  rtt_backend.o
     0x08003ad0   0x08003ad0   0x00000004   Code   RO         1163    .text.rtt_backend_init  rtt_backend.o
     0x08003ad4   0x08003ad4   0x0000001a   Code   RO         1313    x$fpl$fpinit        fz_wv.l(fpinit.o)
-    0x08003aee   0x08003aee   0x0000006a   Data   RO           17    .pw_tokenizer.entries.107_1  main.o
-    0x08003b58   0x08003b58   0x00000006   Data   RO         1021    .rodata..Lswitch.table.UART_SetConfig.7  stm32h7xx_hal_uart.o
-    0x08003b5e   0x08003b5e   0x00000006   Data   RO         1022    .rodata..Lswitch.table.UART_SetConfig.9  stm32h7xx_hal_uart.o
-    0x08003b64   0x08003b64   0x00000010   Data   RO         1078    .rodata.D1CorePrescTable  system_stm32h7xx.o
-    0x08003b74   0x08003b74   0x00000018   Data   RO         1020    .rodata.UARTPrescTable  stm32h7xx_hal_uart.o
-    0x08003b8c   0x08003b8c   0x00000010   Data   RO         1063    .rodata.cst8        stm32h7xx_hal_uart_ex.o
-    0x08003b9c   0x08003b9c   0x00000009   Data   RO         1152    .rodata.str1.1      segger_rtt.o
-    0x08003ba5   0x08003ba5   0x00000003   PAD
-    0x08003ba8   0x08003ba8   0x00000020   Data   RO         1374    Region$$Table       anon$$obj.o
+    0x08003aee   0x08003aee   0x00000006   Data   RO         1021    .rodata..Lswitch.table.UART_SetConfig.7  stm32h7xx_hal_uart.o
+    0x08003af4   0x08003af4   0x00000006   Data   RO         1022    .rodata..Lswitch.table.UART_SetConfig.9  stm32h7xx_hal_uart.o
+    0x08003afa   0x08003afa   0x00000010   Data   RO         1078    .rodata.D1CorePrescTable  system_stm32h7xx.o
+    0x08003b0a   0x08003b0a   0x00000018   Data   RO         1020    .rodata.UARTPrescTable  stm32h7xx_hal_uart.o
+    0x08003b22   0x08003b22   0x00000010   Data   RO         1063    .rodata.cst8        stm32h7xx_hal_uart_ex.o
+    0x08003b32   0x08003b32   0x00000009   Data   RO         1152    .rodata.str1.1      segger_rtt.o
+    0x08003b3b   0x08003b3b   0x00000001   PAD
+    0x08003b3c   0x08003b3c   0x00000020   Data   RO         1374    Region$$Table       anon$$obj.o
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08003bc8, Size: 0x00000000, Max: 0x00020000, ABSOLUTE)
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08003b5c, Size: 0x00000000, Max: 0x00020000, ABSOLUTE)
 
     **** No section assigned to this execution region ****
 
 
-    Execution Region RW_IRAM2 (Exec base: 0x24000000, Load base: 0x08003bc8, Size: 0x00000bc8, Max: 0x00050000, ABSOLUTE)
+    Execution Region RW_IRAM2 (Exec base: 0x24000000, Load base: 0x08003b60, Size: 0x00000bc8, Max: 0x00050000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x24000000   0x08003bc8   0x00000008   Data   RW          677    .data..L_MergedGlobals  stm32h7xx_hal.o
-    0x24000008   0x08003bd0   0x00000008   Data   RW         1079    .data..L_MergedGlobals  system_stm32h7xx.o
+    0x24000000   0x08003b60   0x00000008   Data   RW          677    .data..L_MergedGlobals  stm32h7xx_hal.o
+    0x24000008   0x08003b68   0x00000008   Data   RW         1079    .data..L_MergedGlobals  system_stm32h7xx.o
     0x24000010        -       0x00000060   Zero   RW         1239    .bss                c_w.l(libspace.o)
     0x24000070        -       0x00000011   Zero   RW         1154    .bss..L_MergedGlobals  segger_rtt.o
-    0x24000081   0x08003bd8   0x00000003   PAD
+    0x24000081   0x08003b70   0x00000003   PAD
     0x24000084        -       0x000000a8   Zero   RW         1150    .bss._SEGGER_RTT    segger_rtt.o
     0x2400012c        -       0x00000400   Zero   RW         1153    .bss._acUpBuffer    segger_rtt.o
     0x2400052c        -       0x00000094   Zero   RW           18    .bss.huart1         main.o
     0x240005c0        -       0x00000004   Zero   RW          676    .bss.uwTick         stm32h7xx_hal.o
-    0x240005c4   0x08003bd8   0x00000004   PAD
+    0x240005c4   0x08003b70   0x00000004   PAD
     0x240005c8        -       0x00000200   Zero   RW            2    HEAP                startup_stm32h723xx.o
     0x240007c8        -       0x00000400   Zero   RW            1    STACK               startup_stm32h723xx.o
 

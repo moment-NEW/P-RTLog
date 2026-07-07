@@ -5,6 +5,13 @@
 ; This file lives outside the generated output directory so it will not be
 ; overwritten by rebuilds or project regeneration.
 ;
+; Tokenizer metadata: keep in AXF for host-side decode, do not place in flash image.
+LR_PW_TOKENIZER 0x00000000 {
+  ER_PW_TOKENIZER 0x00000000 {
+   * (.pw_tokenizer.entries)
+  }
+}
+
 ; Main image regions
 LR_IROM1 0x08000000 0x00100000  {
   ER_IROM1 0x08000000 0x00100000  {
@@ -18,14 +25,5 @@ LR_IROM1 0x08000000 0x00100000  {
   }
   RW_IRAM2 0x24000000 0x00050000  {
    .ANY (+RW +ZI)
-  }
-}
-
-; Tokenizer metadata: keep in AXF for host-side decode, do not place in flash image.
-LR_PW_TOKENIZER 0x00000000 INFO {
-  ER_PW_TOKENIZER 0x00000000 {
-   *(.pw_tokenizer.info)
-   *(.pw_tokenizer.entries.*)
-   *(.rodata.*_pw_tokenizer_string_entry_*)
   }
 }

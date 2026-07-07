@@ -116,17 +116,23 @@ constexpr Entry<kDomainSize, kStringSize> MakeEntry(
 
 #else  // In C, define a struct inline with appropriately-sized string members.
 
-#define _P_TOKENIZER_STRING_ENTRY(                   \
+#if defined(P_RTLOG_AC6_FIXED_TOKEN_SECTION)
+#define _P_TOKENIZER_ENTRY_SECTION P_KEEP_IN_SECTION(".pw_tokenizer.entries")
+#else
+#define _P_TOKENIZER_ENTRY_SECTION _P_TOKENIZER_SECTION
+#endif  // defined(P_RTLOG_AC6_FIXED_TOKEN_SECTION)
+
+#define _P_TOKENIZER_STRING_ENTRY(                    \
     calculated_token, domain_literal, string_literal) \
-  P_PACKED(struct) {                                 \
+  P_PACKED(struct) {                                  \
     _pw_tokenizer_EntryHeader header;                 \
     char domain[sizeof(domain_literal)];              \
     char string[sizeof(string_literal)];              \
   }                                                   \
-  _P_TOKENIZER_UNIQUE(_pw_tokenizer_string_entry_)   \
-  _P_TOKENIZER_SECTION = {                           \
+  _P_TOKENIZER_UNIQUE(_pw_tokenizer_string_entry_)    \
+  _P_TOKENIZER_ENTRY_SECTION = {                      \
       {                                               \
-          .magic = _P_TOKENIZER_ENTRY_MAGIC,         \
+          .magic = _P_TOKENIZER_ENTRY_MAGIC,          \
           .token = calculated_token,                  \
           .domain_length = sizeof(domain_literal),    \
           .string_length = sizeof(string_literal),    \

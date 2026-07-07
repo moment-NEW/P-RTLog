@@ -25,7 +25,7 @@
 "cubemx_config\segger_rtt.o"
 "cubemx_config\rtt_backend.o"
 "cubemx_config\plog_tokenized_light.o"
---strict --scatter "CubeMX_Config\CubeMX_Config.sct"
+--strict --scatter ".\p_rtlog_ac6.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
 --list "CubeMX_Config.map" -o CubeMX_Config\CubeMX_Config.axf

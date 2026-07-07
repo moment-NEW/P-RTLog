@@ -14,17 +14,10 @@
 ;            any existing load region in your scatter file.
 ; =============================================================================
 
-LR$$PW_TOKENIZER$$ 0x00000000 UNINIT
+LR_PW_TOKENIZER 0x00000000
 {
-  .pw_tokenizer.info
+  ER_PW_TOKENIZER 0x00000000
   {
-    *(.pw_tokenizer.info)
-  }
-
-  .pw_tokenizer.entries
-  {
-    *(.pw_tokenizer.entries.*)
-    ; Workaround for GCC bug #88061: template variables may end up in .rodata
-    *(.rodata.*_pw_tokenizer_string_entry_*)
+    *(.pw_tokenizer.entries)
   }
 }
