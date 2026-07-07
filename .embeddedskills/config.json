@@ -1,0 +1,7 @@
+{
+  "keil": {
+    "project": "example/MDK-ARM/CubeMX_Config.uvprojx",
+    "target": "CubeMX_Config",
+    "log_dir": ".embeddedskills/build"
+  }
+}

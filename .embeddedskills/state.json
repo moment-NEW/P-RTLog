@@ -1,0 +1,24 @@
+{
+  "last_build": {
+    "provider": "keil",
+    "action": "build",
+    "project": "example/MDK-ARM/CubeMX_Config.uvprojx",
+    "target": "CubeMX_Config",
+    "log_dir": ".embeddedskills/build",
+    "artifacts": {
+      "axf_file": "example/MDK-ARM/CubeMX_Config/CubeMX_Config.axf",
+      "hex_file": "example/MDK-ARM/CubeMX_Config/CubeMX_Config.hex",
+      "flash_file": "example/MDK-ARM/CubeMX_Config/CubeMX_Config.hex",
+      "debug_file": "example/MDK-ARM/CubeMX_Config/CubeMX_Config.axf",
+      "output_dir": "example/MDK-ARM/CubeMX_Config",
+      "log_file": ".embeddedskills/build/CubeMX_Config-CubeMX_Config-build.log"
+    },
+    "axf_file": "example/MDK-ARM/CubeMX_Config/CubeMX_Config.axf",
+    "hex_file": "example/MDK-ARM/CubeMX_Config/CubeMX_Config.hex",
+    "flash_file": "example/MDK-ARM/CubeMX_Config/CubeMX_Config.hex",
+    "debug_file": "example/MDK-ARM/CubeMX_Config/CubeMX_Config.axf",
+    "output_dir": "example/MDK-ARM/CubeMX_Config",
+    "log_file": ".embeddedskills/build/CubeMX_Config-CubeMX_Config-build.log",
+    "timestamp": "2026-07-07T17:35:30+08:00"
+  }
+}

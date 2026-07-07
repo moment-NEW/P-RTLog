@@ -38,10 +38,10 @@ add_compile_definitions(
 # Source files
 set(P_RTLOG_SOURCES
     # Tokenized logging (C++)
-    src/log_tokenized/log_tokenized_light.cc
+    # src/log_tokenized/log_tokenized_light.cc
     
     # Tokenized logging (C version - optional, comment out if using C++ version)
-    # src/log_tokenized/plog_tokenized_light.c
+    src/log_tokenized/plog_tokenized_light.c
     
     # RTT backend
     src/log_tokenized/backend/RTT/rtt_backend.c
