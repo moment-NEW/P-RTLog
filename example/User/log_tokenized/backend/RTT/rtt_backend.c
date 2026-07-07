@@ -26,19 +26,22 @@ void pw_log_tokenized_HandleLogWithoutMetadata(
         return;
     }
 
-    // Clamp to uint16_t max (65535 bytes per frame)
-    if (size_bytes > 0xFFFF) {
-        size_bytes = 0xFFFF;
+    uint8_t frame[2 + P_LOG_TOKENIZED_ENCODING_BUFFER_SIZE_BYTES];
+
+    // Keep header + payload in one RTT write. If header and payload are written
+    // separately, SEGGER_RTT_MODE_NO_BLOCK_SKIP may keep only one part when the
+    // ring buffer is full, leaving the host-side length-prefixed stream corrupt.
+    if (size_bytes > sizeof(frame) - 2) {
+        size_bytes = sizeof(frame) - 2;
     }
 
     // 2-byte little-endian length prefix
     //RTT协议要求每条日志前加若干字节长度信息
-    uint8_t header[2];
-    header[0] = (uint8_t)(size_bytes & 0xFF);
-    header[1] = (uint8_t)((size_bytes >> 8) & 0xFF);
+    frame[0] = (uint8_t)(size_bytes & 0xFF);
+    frame[1] = (uint8_t)((size_bytes >> 8) & 0xFF);
+    memcpy(&frame[2], encoded_message, size_bytes);
 
-    // Write header + payload to RTT channel
-    SEGGER_RTT_Write(P_RTT_LOG_CHANNEL, header, sizeof(header));
-    SEGGER_RTT_Write(P_RTT_LOG_CHANNEL, encoded_message, (unsigned)size_bytes);
+    // Write one complete frame to RTT channel.
+    SEGGER_RTT_Write(P_RTT_LOG_CHANNEL, frame, (unsigned)(size_bytes + 2));
 }
 #endif  // USING_RTT_BACKEND

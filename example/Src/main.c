@@ -104,7 +104,12 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+		static uint8_t times =0;
+		times++;
 		P_LOG("I am the storm that is approaching！");
+		P_WARN("How many times have we fight?");
+		P_ERROR("Hard to say,maybe %d times?",times);
+    HAL_Delay(100);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

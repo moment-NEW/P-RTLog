@@ -1,177 +1,304 @@
-# What is P-RTLog
+# P-RTLog
 
-P-RTLog 是 P-Momentum 工具集中的日志模块。它集成并裁剪了 Pigweed 的哈希化日志（tokenized log）与 SEGGER RTT 的实时传输能力，提供最大可配置性与开箱即用性。
+P-RTLog 是一个面向嵌入式的轻量 tokenized log 示例库。它把日志格式串在编译期保存到 AXF/ELF 的 token section 中，运行时只通过 RTT 发送 token 和参数，主机端再根据 AXF/ELF 还原成人类可读日志。
 
-由于 RTT Viewer 原生不支持 tokenized log，建议配合工具集中的 **RTT-View Ciallo** 使用（它还支持 DAPLink 哦）。
+当前已验证的主链路是：
 
-# 前言
-
-项目的初衷是实现轻量化的 tokenized 库，没想到谷歌的 pigweed 依赖十分的繁杂，一个函数可以套五六层，然后用 inline 展开这种惊为天人的操作。本库因为是移植的 pw_tokenized_log，多少依然有类似的依赖情况，只是删除和改写了部分文件，没有全部封装到一起。后续会按照 P-Momentum 的思想逐步改进为更轻量化，方便配置的形式。
-原本我也想实现一些简洁优雅的代码，但是最终还是以非常简陋的形式呈现了。或许之后如果常用到的话，会有时间慢慢完善吧
-## 工作原理
-
-```
-应用代码 → P_LOG() → hash token + 编码参数 → RTT ring buffer → J-Link → 主机端解码显示
+```text
+P_LOG / P_WARN / P_ERROR
+  -> 编译期生成 32-bit token
+  -> 运行时通过 SEGGER RTT 输出二进制帧
+  -> RTTView 读取 AXF 中的 token section 并解码显示
 ```
 
-- **Pigweed pw_log_tokenized**：格式串在编译期哈希化为 32-bit token，运行时只传输 token + 变长编码的参数，极大节省带宽。
-- **SEGGER RTT**：通过共享内存 ring buffer 实现零拷贝、非侵入式日志传输，J-Link 通过调试接口读取，不占用外设引脚。
+运行时 RTT 传输格式：
 
-## 目录结构
-
-```
-P-RTLog/
-├── src/                          # 核心源码
-│   ├── log_tokenized/            # Tokenized logging 实现
-│   │   ├── backend/RTT/          # RTT 后端（rtt_backend.h/.c）
-│   │   ├── config.h              # 配置 + 后端选择宏
-│   │   ├── log_tokenized_light.h # 公共 API（P_LOG 宏）
-│   │   └── log_tokenized_light.cc
-│   ├── tokenizer/                # Tokenizer 核心（hash、encode、section）
-│   ├── p-macro.h                 # 通用宏工具
-│   ├── p_varint.h                # Varint 编码
-│   └── p-span/                   # Span 实现
-├── config/                       # 用户自定义配置
-├── scripts/
-│   ├── linker/                   # Linker script 片段（Keil .sct）
-│   └── decode_rtt_log.py         # 主机端解码脚本
-├── stubs/                        # Pigweed 依赖 stub（to_array, span 等）
-├── third_party/
-│   ├── pigweed/                  # pw_tokenizer + pw_log_tokenized
-│   └── segger_rtt/               # SEGGER RTT 源码
-└── CMakeLists.txt                # CMake 构建（Ninja）
+```text
+[2-byte little-endian payload length][4-byte token][encoded args...]
 ```
 
-## 快速开始
+## 前言
 
-### 1. 编译验证（主机端，GCC + Ninja）
+这个项目的目标是验证并整理一条可用的嵌入式 tokenized log 路径：固件端尽量少传数据，主机端利用 AXF/ELF 中保留的 token 数据库还原日志。
 
-```bash
-# 配置
-cmake -B build -G Ninja
+当前版本先以 Keil + STM32H7 + SEGGER RTT + RTTView 为主要验证环境。文档只描述已经跑通的部分，未验证的后端和复杂功能暂不展开。
 
-# 编译
-cmake --build build
+## 简要原理
+
+普通日志会把完整字符串发出去，例如：
+
+```text
+Hard to say,maybe 12 times?
 ```
 
-编译成功后会生成 `build/libp_rtlog.a` 静态库。
+Tokenized log 则把格式串编译进 AXF/ELF 的 token section，运行时只发送：
 
-### 2. 集成到你的嵌入式项目
-
-#### 添加源文件
-
-将以下文件加入你的工程：
-
-| 文件 | 说明 |
-|------|------|
-| `src/log_tokenized/log_tokenized_light.cc` | Tokenized logging 核心 |
-| `src/log_tokenized/backend/RTT/rtt_backend.c` | RTT 后端实现 |
-| `third_party/segger_rtt/RTT/SEGGER_RTT.c` | RTT 驱动 |
-| `third_party/segger_rtt/RTT/SEGGER_RTT.h` | RTT 头文件 |
-| `third_party/segger_rtt/RTT/SEGGER_RTT_ConfDefaults.h` | RTT 默认配置 |
-| `third_party/segger_rtt/Config/SEGGER_RTT_Conf.h` | RTT 用户配置 |
-
-#### 添加 Include 路径
-
+```text
+token + encoded arguments
 ```
-src/
-src/p-span/
-src/log_tokenized/
-src/log_tokenized/backend/RTT/
-third_party/pigweed/pw_tokenizer/pw_tokenizer/public/
-third_party/pigweed/pw_log_tokenized/public/
-third_party/pigweed/pw_log_tokenized/public_overrides/
-third_party/pigweed/pw_log_tokenized/light_public_overrides/
-third_party/segger_rtt/RTT/
-third_party/segger_rtt/Config/
+
+例如：
+
+```c
+P_ERROR("Hard to say,maybe %d times?", times);
+```
+
+固件端 RTT 实际发送的是：
+
+```text
+[length][token][encoded times]
+```
+
+RTTView 打开同一个 AXF 后，从 token section 取出 token 与格式串的映射，再把 RTT 二进制帧解码成原始文本。
+
+这种方式的优点是：
+
+- RTT 上传输的数据更少。
+- 字符串主要保存在 AXF/ELF 中，运行时只传 token 和参数。
+- 支持 `%d` 这类参数化日志。
+
+## 当前验证状态
+
+测试工程在 `example/` 下，主要测试代码位于：
+
+- `example/Src/main.c`
+- `example/User/log_tokenized/backend/RTT/rtt_backend.c`
+
+当前 Keil 示例已验证 3 条 tokenized log：
+
+```c
+P_LOG("I am the storm that is approaching！");
+P_WARN("How many times have we fight?");
+P_ERROR("Hard to say,maybe %d times?", times);
+```
+
+其中：
+
+- `P_LOG`：纯字符串，已通过
+- `P_WARN`：纯字符串，已通过
+- `P_ERROR`：`%d` 整数参数，已通过
+
+默认 RTT 通道：
+
+```c
+#define P_RTT_LOG_CHANNEL 0
+```
+
+## 快速测试
+
+1. 打开 Keil 工程：
+
+   `example/MDK-ARM/CubeMX_Config.uvprojx`
+
+2. Rebuild 工程。
+
+3. 烧录到目标板。
+
+4. 使用 RTTView 打开生成的 AXF：
+
+   `example/MDK-ARM/CubeMX_Config/CubeMX_Config.axf`
+
+5. RTTView 中选择 `P-RTLog Tokenized` 显示模式。
+
+正常输出示例：
+
+```text
+I am the storm that is approaching！ [module=default, file=../Src/main.c]
+How many times have we fight? [module=default, file=../Src/main.c]
+Hard to say,maybe 1 times? [module=default, file=../Src/main.c]
+```
+
+## 关键文件
+
+```text
+example/
+├── Src/main.c
+├── MDK-ARM/CubeMX_Config.uvprojx
+└── User/log_tokenized/
+    ├── log_tokenized_light.h
+    ├── plog_tokenized_light.c
+    ├── p_rtlog_config.h
+    ├── backend/RTT/rtt_backend.c
+    └── backend/RTT/rtt_backend.h
+
+scripts/linker/p_rtlog_tokenizer_sections.sct
+```
+
+## 集成到自己的工程
+
+下面以当前已验证的 RTT 后端为例。
+
+### 1. 拷贝源码
+
+可以参考 `example/User/` 的组织方式，把以下目录/文件放入自己的工程，例如放到 `User/` 下：
+
+```text
+log_tokenized/
+├── log_tokenized_light.h
+├── plog_tokenized_light.c
+├── p_rtlog_config.h
+├── light_handler.h
+├── backend/RTT/
+│   ├── rtt_backend.c
+│   ├── rtt_backend.h
+│   ├── SEGGER_RTT.c
+│   ├── SEGGER_RTT.h
+│   ├── SEGGER_RTT_Conf.h
+│   └── SEGGER_RTT_ConfDefaults.h
+└── ...
+
+tokenizer/
+p-span/
+p-macro.h
+p_varint.h
 stubs/
 ```
 
-#### 添加编译宏
+如果使用仓库根目录的 `src/`，对应关系基本一致：
 
-```
--DUSING_RTT_BACKEND
--DP_TOKENIZER_CFG_ARG_TYPES_SIZE_BYTES=4
--DP_TOKENIZER_CFG_C_HASH_LENGTH=128
-```
-
-> **后端选择**：在编译宏中定义 `USING_RTT_BACKEND` 启用 RTT 后端。同时定义多个后端会触发编译错误。
-
-#### 配置 Linker Script
-
-将 pigweed 的 section 定义加入你的 linker script，使 tokenized 字符串保留在 ELF 中供主机端解码：
-
-**GCC (arm-none-eabi-ld)**：在 linker 命令中添加：
-```
--T third_party/pigweed/pw_tokenizer/pw_tokenizer/pw_tokenizer_linker_sections.ld
+```text
+src/log_tokenized/
+src/tokenizer/
+src/p-span/
+src/p-macro.h
+src/p_varint.h
+stubs/
 ```
 
-**Keil (ARM Compiler 6)**：在 scatter file 中 include：
+### 2. 添加源文件
+
+至少需要加入这些 `.c` 文件：
+
+```text
+log_tokenized/plog_tokenized_light.c
+log_tokenized/backend/RTT/rtt_backend.c
+log_tokenized/backend/RTT/SEGGER_RTT.c
 ```
+
+如果使用汇编优化版本 RTT，也可以按目标架构加入：
+
+```text
+log_tokenized/backend/RTT/SEGGER_RTT_ASM_ARMv7M.S
+```
+
+### 3. 添加 include 路径
+
+以 `example/User/` 方式集成为例，常用 include 路径包括：
+
+```text
+User/
+User/log_tokenized/
+User/log_tokenized/backend/RTT/
+User/tokenizer/
+User/tokenizer/internal/
+User/p-span/
+User/stubs/
+```
+
+路径可根据实际工程目录调整。
+
+### 4. 配置后端
+
+当前默认启用 RTT 后端。也可以在工程宏中显式定义：
+
+```text
+USING_RTT_BACKEND
+```
+
+默认 RTT 输出通道在 `p_rtlog_config.h` 中：
+
+```c
+#define P_RTT_LOG_CHANNEL 0
+```
+
+### 5. 配置 linker / scatter file
+
+这一步很重要：tokenized log 的格式串必须保留在 AXF/ELF 中，否则主机端无法建 token DB。
+
+#### Keil / ARM Compiler 6
+
+在 scatter file 中包含：
+
+```text
 INCLUDE scripts/linker/p_rtlog_tokenizer_sections.sct
 ```
 
-> 这些 section 类型为 `INFO`，**不会烧录到 MCU**，仅保留在 ELF 文件中。
+当前 RTTView 已支持 Keil 输出区：
 
-### 3. 在代码中使用
+```text
+ER_PW_TOKENIZER
+```
+
+#### GCC linker script
+
+参考：
+
+```text
+scripts/linker/p_rtlog_tokenizer_sections.ld
+```
+
+常见 section 名为：
+
+```text
+.pw_tokenizer.entries
+```
+
+### 6. 在代码中使用
+
+初始化 RTT 后端：
 
 ```c
 #include "log_tokenized/log_tokenized_light.h"
 #include "log_tokenized/backend/RTT/rtt_backend.h"
 
 int main(void) {
-    rtt_backend_init();  // 初始化 RTT（可选，SEGGER_RTT 会自动初始化）
+   // HAL / clock / peripheral init ...
 
-    P_LOG_INFO("System started, version %d.%d", 1, 0);
-    P_LOG_WARN("Temperature: %f C", 85.3f);
-    P_LOG_ERROR("Motor %d stalled!", 2);
+   rtt_backend_init();
 
-    while (1) {
-        // ...
-    }
+   while (1) {
+      static uint8_t times = 0;
+      times++;
+
+      P_LOG("I am the storm that is approaching！");
+      P_WARN("How many times have we fight?");
+      P_ERROR("Hard to say,maybe %d times?", times);
+
+      HAL_Delay(100);
+   }
 }
 ```
 
-### 4. 主机端解码
+### 7. 用 RTTView 查看
 
-```bash
-# 安装依赖
-pip install pyelftools
+1. 编译并烧录固件。
+2. 在 RTTView 中选择生成的 AXF/ELF。
+3. 显示模式选择 `P-RTLog Tokenized`。
+4. 打开连接。
 
-# 解码 RTT 日志
-python scripts/decode_rtt_log.py firmware.elf rtt_capture.bin
+RTTView 会从 AXF/ELF 中读取 token section，并优先通过 `_SEGGER_RTT` 符号定位 RTT control block。
+
+## Keil token section
+
+Keil/ARM Compiler 6 工程需要保留 token section，供 RTTView 从 AXF 中提取 token 数据库。
+
+当前 RTTView 已支持 Keil 输出区：
+
+```text
+ER_PW_TOKENIZER
 ```
 
-解码脚本会：
-1. 从 ELF 的 `.pw_tokenizer.entries` section 提取 token → 格式串数据库
-2. 从 RTT 捕获数据中读取 `[2字节长度][token+参数]` 帧
-3. 查表还原原始日志
+也兼容常见 section 名：
 
-## 配置
-
-### RTT 通道
-
-默认使用 RTT Channel 0（与 RTT Viewer Terminal 共享）。如需分离日志和终端 I/O，在编译宏中指定：
-
-```
--DP_RTT_LOG_CHANNEL=1
+```text
+.pw_tokenizer.entries
 ```
 
-### 后端扩展
+## 注意事项
 
-在 `src/log_tokenized/config.h` 中通过编译宏选择后端：
-
-| 宏 | 说明 | 状态 |
-|---|---|---|
-| `USING_RTT_BACKEND` | SEGGER RTT (J-Link) | ✅ 已实现 |
-| `USING_UART_BACKEND` | UART 串口 | 🔜 预留 |
-| `USING_SWO_BACKEND` | SWO/ITM | 🔜 预留 |
-
-## 参考项目
-
-- [pigweed-project/pigweed — pw_log_tokenized](https://github.com/pigweed-project/pigweed/tree/main/pw_log_tokenized)
-- [pigweed-project/pigweed — pw_log_zephyr](https://github.com/pigweed-project/pigweed/tree/main/pw_log_zephyr)
-- [SEGGERMicro/RTT](https://github.com/SEGGERMicro/RTT)
+- RTT 后端会把 header 和 payload 组装后一次性写入 RTT，避免高频输出时 length frame 被打断。
+- 示例代码中保留了 `HAL_Delay(100)`，用于避免 RTT buffer 被连续日志刷满。
+- 当前文档只描述已验证的 RTT tokenized log 路径。
 
 ## License
 
