@@ -20,15 +20,22 @@
 
 /// @module{pw_log_tokenized}
 
+#ifndef P_LOG_TOKENIZED_FORMAT_STRING_WITH_LEVEL
+#define P_LOG_TOKENIZED_FORMAT_STRING_WITH_LEVEL(level, module, message) \
+  P_LOG_TOKENIZED_FIELD_PREFIX "level" P_LOG_TOKENIZED_KEY_VALUE_SEPARATOR \
+      P_STRINGIFY(level)                                                   \
+  P_LOG_TOKENIZED_FORMAT_STRING(module, message)
+#endif
+
 /// This macro implements `P_LOG` using `pw_tokenizer` without any metadata.
 /// Users must implement `pw_log_tokenized_HandleLogWithoutMetadata(const
 /// uint8_t* buffer, size_t size)`.
 #define P_LOG_TOKENIZED_TO_GLOBAL_HANDLER(level, module, flags, message, ...) \
   do {                                                                         \
-    (void)level;                                                               \
     (void)flags;                                                               \
     P_LOG_TOKENIZED_ENCODE_MESSAGE_LIGHT(                                     \
-        P_LOG_TOKENIZED_FORMAT_STRING(module, message), __VA_ARGS__);         \
+        P_LOG_TOKENIZED_FORMAT_STRING_WITH_LEVEL(level, module, message),     \
+        __VA_ARGS__);                                                         \
   } while (0)
 
 /// Encodes a log message into the tokenized format without metadata.
