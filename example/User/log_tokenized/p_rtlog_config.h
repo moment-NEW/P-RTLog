@@ -13,8 +13,8 @@
 // the License.
 #pragma once
 
-#include "pw_log/levels.h"
-#include "pw_log/options.h"
+
+
 #include "pw_polyfill/static_assert.h"
 #include "tokenizer/config.h"
 
@@ -70,6 +70,11 @@
 // excluded.
 
 /// Bits to allocate for the log level. Defaults to `P_LOG_LEVEL_BITS` (3).
+/// Number of bits used to encode the log level. Default: 3 (8 levels).
+#ifndef P_LOG_LEVEL_BITS
+#define P_LOG_LEVEL_BITS 3
+#endif  // P_LOG_LEVEL_BITS
+
 #ifndef P_LOG_TOKENIZED_LEVEL_BITS
 #define P_LOG_TOKENIZED_LEVEL_BITS P_LOG_LEVEL_BITS
 #endif  // P_LOG_TOKENIZED_LEVEL_BITS
